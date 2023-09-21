@@ -8,10 +8,10 @@ from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
-DEBUG = os.getenv('DJANGO_DEBUG').lower() in ['true', '1']
+SECRET_KEY = 'bkdnoj'
+DEBUG = False #os.getenv('DJANGO_DEBUG').lower() in ['true', '1']
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 def get_extra_allowed_host():
     return os.getenv('DJANGO_ALLOWED_HOST')
@@ -57,6 +57,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     ##
     'django.middleware.gzip.GZipMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware", # Thêm cái này vào
+
 ]
 
 # =================================== Django Debug Toolbar
@@ -98,7 +101,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'react_app'),
+                       os.path.join(BASE_DIR.parent, 'frontend','build'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -117,11 +120,11 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('POSTGRES_NAME'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_PORT'),
+        'NAME': "bkdnoj",
+        'USER': "postgres",
+        'PASSWORD': "123456",
+        'HOST': "localhost",
+        'PORT': "5432",
     }
 }
 
@@ -156,7 +159,7 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'react_app', 'static'),
+    os.path.join(BASE_DIR.parent, 'frontend', 'build','static'),
 ]
 
 # Fixture folder
@@ -182,7 +185,18 @@ CORS_ORIGIN_ALLOW_ALL=True
 # ]
 CSRF_COOKIE_HTTPONLY = False
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000', 'https://localhost:3000'
+    'http://host:port',
+    "http://192.168.117.130:8000",
+    "http://192.168.117.130:8001",
+    "http://192.168.117.130:9999",
+    "http://192.168.117.130",
+    "localhost",
+    "127.0.0.1:9999",
+    "127.0.0.1:8000",
+    "127.0.0.1:8001",
+    "127.0.0.1",
+    
+    
 ]
 if get_extra_allowed_host():
     CSRF_TRUSTED_ORIGINS.append(f"http://{get_extra_allowed_host()}:3000")
@@ -254,10 +268,10 @@ LOGGING = {
 
 ## ==================================== Caching
 def get_redis_address():
-    redis_host = os.getenv('REDIS_HOST')
+    redis_host = "localhost"
     if redis_host is None: redis_host = 'localhost'
 
-    redis_port = os.getenv('REDIS_PORT')
+    redis_port = "6379"
     if redis_port is None: redis_port = '6379'
     return f"redis://{redis_host}:{redis_port}"
 
@@ -351,10 +365,10 @@ EVENT_DAEMON_SUBMISSION_KEY = '6Sdmkx^%pk@GsifDfXcwX*Y7LRF%RGT8vmFpSxFBT$fwS7trc
 
 ## ==================================== Judger bridge
 def get_bridged_judge_address():
-    bridged_host=os.getenv('BKDNOJ_JUDGE_ADDRESS')
+    bridged_host="localhost"
     if bridged_host is None: bridged_host = 'localhost'
 
-    bridged_port=os.getenv('BKDNOJ_JUDGE_PORT')
+    bridged_port="9999"
     if bridged_port is None: bridged_port = 9999
     else: bridged_port = int(bridged_port)
     return [(bridged_host, bridged_port)]
